@@ -5,11 +5,12 @@ import { Todo } from 'src/models/todo.model';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.sass'],
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
+  public mode: String = 'list';
   public todos: Todo[] = [];
-  public title: String = 'Minhas Tarefas';
+  public title: String = 'Lista de Tarefas';
   public form: FormGroup;
 
   constructor(private fb: FormBuilder) {
@@ -23,6 +24,7 @@ export class AppComponent {
         ]),
       ],
     });
+    this.load();
   }
 
   add() {
@@ -42,18 +44,35 @@ export class AppComponent {
     if (index != -1) {
       this.todos.splice(index, 1);
     }
+    this.save();
   }
 
   markAsDone(todo: Todo) {
     todo.done = true;
+    this.save();
   }
 
   markAsUndone(todo: Todo) {
     todo.done = false;
+    this.save();
   }
 
   save() {
     const data = JSON.stringify(this.todos);
     localStorage.setItem('todos', data);
+    this.mode = 'list';
+  }
+
+  load() {
+    const data = localStorage.getItem('todos');
+    if (data) {
+      this.todos = JSON.parse(data);
+    } else {
+      this.todos = [];
+    }
+  }
+
+  changeMode(mode: String) {
+    this.mode = mode;
   }
 }
